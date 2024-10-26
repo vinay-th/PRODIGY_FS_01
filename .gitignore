@@ -33,10 +33,10 @@ build/
 .vscode/
 
 # Application properties files
-**/application.properties
-**/application-*.properties
-**/application.yml
-**/application-*.yml
+Backend/src/main/resources/application.properties
+Backend/src/main/resources/application-*.properties
+Backend/src/main/resources/application.yml
+Backend/src/main/resources/application-*.yml
 
 # Environment files
 .env
