@@ -1,21 +1,10 @@
 package com.authflow.vinayThakor.AuthFlow.dto;
 
-import java.util.List;
-
-public class UserDTO {
-    private Long id;
+public class AuthenticationRequest {
     private String username;
     private String password;
-    private List<String> roles; // Ensure this is a List<String>
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Getters and Setters
     public String getUsername() {
         return username;
     }
@@ -30,13 +19,5 @@ public class UserDTO {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
     }
 }

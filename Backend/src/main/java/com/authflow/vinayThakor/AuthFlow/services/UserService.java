@@ -1,36 +1,61 @@
 package com.authflow.vinayThakor.AuthFlow.services;
 
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import com.authflow.vinayThakor.AuthFlow.dto.UserDTO;
-import com.authflow.vinayThakor.AuthFlow.entities.UserEntity;
+import com.authflow.vinayThakor.AuthFlow.model.UserEntity;
 import com.authflow.vinayThakor.AuthFlow.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Collections;
+import java.util.Arrays;
 
 @Service
-public class UserService {
-    final UserRepository userRepo;
+public class UserService implements UserDetailsService {
 
-    final ModelMapper modelMapper;
+    @Autowired
+    private UserRepository userRepository;
 
-    public UserService(UserRepository userRepo, ModelMapper modelMapper) {
-        this.userRepo = userRepo;
-        this.modelMapper = modelMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        System.out.println("User found: " + user.getUsername() + ", Roles: " + user.getRoles());
+        System.out.println("Encoded password: " + user.getPassword());
+
+        String[] roles = user.getRoles() != null ? user.getRoles().split(",") : new String[] { "USER" };
+        System.out.println("Roles array: " + Arrays.toString(roles));
+
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles(roles)
+                .build();
     }
 
-    public UserDTO getUserByID(Long id) {
-        UserEntity userEntity = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return modelMapper.map(userEntity, UserDTO.class);
+    public UserDTO registerNewUser(UserDTO userDTO) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(userDTO.getUsername());
+        userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+        if (userDTO.getRoles() == null || userDTO.getRoles().isEmpty()) {
+            userDTO.setRoles(Collections.singletonList("USER"));
+        }
+        userEntity.setRoles(String.join(",", userDTO.getRoles()));
+
+        UserEntity savedUser = userRepository.save(userEntity);
+        System.out.println("User saved: " + savedUser.getUsername() + ", Roles: " + savedUser.getRoles());
+
+        return userDTO;
     }
 
     public UserDTO newUser(UserDTO userDTO) {
-        System.out.println("UserDTO before mapping: " + userDTO);
-        UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
-        System.out.println("UserEntity after mapping: " + userEntity);
-        UserEntity savedEntity = userRepo.save(userEntity);
-        System.out.println("Saved UserEntity: " + savedEntity);
-        UserDTO result = modelMapper.map(savedEntity, UserDTO.class);
-        System.out.println("Final UserDTO: " + result);
-        return result;
+        return registerNewUser(userDTO);
     }
 }
