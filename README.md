@@ -107,3 +107,5 @@ For any queries or suggestions, reach out at [vinay.th.24@gmail.com](mailto:vina
 ---
 
 🌟 **Star this repo if you find it helpful!** 🌟
+
+# AuthFlow Project Structure

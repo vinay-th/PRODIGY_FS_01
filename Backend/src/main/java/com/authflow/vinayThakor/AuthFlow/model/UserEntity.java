@@ -1,12 +1,19 @@
-package com.authflow.vinayThakor.AuthFlow.dto;
+package com.authflow.vinayThakor.AuthFlow.model;
 
+import jakarta.persistence.*;
 import java.util.List;
 
-public class UserDTO {
+@Entity
+public class UserEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String username;
     private String password;
-    private List<String> roles; // Ensure this is a List<String>
+
+    private String roles; // Store roles as a comma-separated string
 
     public Long getId() {
         return id;
@@ -32,11 +39,11 @@ public class UserDTO {
         this.password = password;
     }
 
-    public List<String> getRoles() {
+    public String getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(String roles) {
         this.roles = roles;
     }
 }
